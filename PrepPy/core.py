@@ -35,11 +35,18 @@ class Preprocessor:
 
     def handle_missing(self, method: str = "mean") -> pd.DataFrame:
         if method == "mean":
-            self.data = self.data.fillna(self.data.mean())
+            # Fill missing values for numeric columns
+            for column in self.data.select_dtypes(include=["number"]).columns:
+                self.data[column].fillna(self.data[column].mean(), inplace=True)
         elif method == "median":
-            self.data = self.data.fillna(self.data.median())
+            # Fill missing values for numeric columns
+            for column in self.data.select_dtypes(include=["number"]).columns:
+                self.data[column].fillna(self.data[column].median(), inplace=True)
         elif method == "mode":
-            self.data = self.data.fillna(self.data.mode().iloc[0])
+            # Fill missing values for all columns with their mode
+            for column in self.data.columns:
+                self.data[column].fillna(self.data[column].mode()[0], inplace=True)
         else:
             raise ValueError(f"Method '{method}' not supported for missing values.")
         return self.data
+

@@ -1,24 +1,37 @@
 import pandas as pd
 from PrepPy import Preprocessor, suggest_steps
 
-# Sample dataset
+# Create a sample dataset
 data = pd.DataFrame({
-    "age": [25, None, 30],
-    "income": [50000, 60000, 70000],
-    "city": ["NY", "SF", None],
+    "age": [25, 30, None, 35],
+    "income": [50000, 60000, 70000, 80000],
+    "city": ["NY", "SF", "NY", None],
 })
 
-# Step 1: Get suggestions
-print("Suggested Steps:")
+# Display original data
+print("Original Data:")
+print(data)
+
+# Step 1: Suggest preprocessing steps
+print("\nSuggested Steps:")
 steps = suggest_steps(data)
 for step in steps:
-    print(step)
+    print(f"- {step}")
 
-# Step 2: Preprocess
+# Step 2: Preprocess data
 preprocessor = Preprocessor(data)
-data = preprocessor.handle_missing()
-data = preprocessor.scale("income", method="minmax")
-data = preprocessor.encode("city")
 
-print("\nProcessed Data:")
+# Handle missing values
+data = preprocessor.handle_missing()
+print("\nData After Handling Missing Values:")
+print(data)
+
+# Scale the 'income' column
+data = preprocessor.scale("income", method="minmax")
+print("\nData After Scaling 'income':")
+print(data)
+
+# Encode the 'city' column
+data = preprocessor.encode("city")
+print("\nData After Encoding 'city':")
 print(data)
