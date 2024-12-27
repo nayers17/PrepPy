@@ -1,3 +1,5 @@
 pandas
 scikit-learn
 setuptools
+seaborn
+matplotlib
