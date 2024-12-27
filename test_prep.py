@@ -1,37 +1,44 @@
+from PrepPy import Preprocessor
 import pandas as pd
-from PrepPy import Preprocessor, suggest_steps
 
-# Create a sample dataset
+# Create a dataset with intentional outliers
 data = pd.DataFrame({
-    "age": [25, 30, None, 35],
-    "income": [50000, 60000, 70000, 80000],
-    "city": ["NY", "SF", "NY", None],
+    "age": [25, 30, 35, 40, 120],  # 120 is an outlier
+    "income": [50000, 60000, 70000, 80000, 1000000],  # 1000000 is an outlier
+    "city": ["NY", "SF", "NY", "LA", "SF"],
 })
 
-# Display original data
 print("Original Data:")
 print(data)
 
-# Step 1: Suggest preprocessing steps
-print("\nSuggested Steps:")
-steps = suggest_steps(data)
-for step in steps:
-    print(f"- {step}")
-
-# Step 2: Preprocess data
+# Initialize Preprocessor
 preprocessor = Preprocessor(data)
 
-# Handle missing values
-data = preprocessor.handle_missing()
-print("\nData After Handling Missing Values:")
-print(data)
+# --- Test Outlier Detection ---
+print("\nTesting with Z-score threshold of 1.5:")
+outliers_age = preprocessor.identify_outliers(column="age", method="zscore", threshold=1.5)
+outliers_income = preprocessor.identify_outliers(column="income", method="zscore", threshold=1.5)
+print("Outliers detected in 'age' (Z-score):", outliers_age)
+print("Outliers detected in 'income' (Z-score):", outliers_income)
 
-# Scale the 'income' column
-data = preprocessor.scale("income", method="minmax")
-print("\nData After Scaling 'income':")
-print(data)
+print("\nTesting with IQR method:")
+outliers_age_iqr = preprocessor.identify_outliers(column="age", method="iqr", threshold=1.5)
+outliers_income_iqr = preprocessor.identify_outliers(column="income", method="iqr", threshold=1.5)
+print("Outliers detected in 'age' (IQR):", outliers_age_iqr)
+print("Outliers detected in 'income' (IQR):", outliers_income_iqr)
 
-# Encode the 'city' column
-data = preprocessor.encode("city")
-print("\nData After Encoding 'city':")
-print(data)
+# --- Test Outlier Removal ---
+print("\nRemoving outliers from 'age' using Z-score with threshold 1.5:")
+data_cleaned = preprocessor.remove_outliers(column="age", method="zscore", threshold=1.5)
+print("Data after removing outliers from 'age' using Z-score:")
+print(data_cleaned)
+
+print("\nRemoving outliers from 'income' using Z-score with threshold 1.5:")
+data_cleaned = preprocessor.remove_outliers(column="income", method="zscore", threshold=1.5)
+print("Data after removing outliers from 'income' using Z-score:")
+print(data_cleaned)
+
+print("\nRemoving outliers from 'income' using IQR:")
+data_cleaned = preprocessor.remove_outliers(column="income", method="iqr", threshold=1.5)
+print("Data after removing outliers from 'income' using IQR:")
+print(data_cleaned)
