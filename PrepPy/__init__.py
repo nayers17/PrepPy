@@ -1,4 +1,4 @@
-from .core import Preprocessor
+from .core import Preprocessor, Pipeline
 from .suggest import suggest_steps
 
-__all__ = ["Preprocessor", "suggest_steps"]
+__all__ = ["Preprocessor", "Pipeline", "suggest_steps"]

@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, OneHotEncoder
 from sklearn.model_selection import train_test_split
+import pickle
 
 
 class Preprocessor:
@@ -304,3 +305,34 @@ class Preprocessor:
         test = pd.concat([X_test, y_test.reset_index(drop=True)], axis=1)
 
         return train, val, test
+    
+class Pipeline:
+    def __init__(self):
+        self.steps = []
+
+    def add_step(self, step_name, **kwargs):
+        """Add a preprocessing step to the pipeline."""
+        self.steps.append((step_name, kwargs))
+
+    def run(self, data, preprocessor):
+        """Run the pipeline on the data using the Preprocessor."""
+        processed_data = data.copy()
+        for step_name, kwargs in self.steps:
+            func = getattr(preprocessor, step_name)
+            if 'column' in kwargs and kwargs['column'] not in processed_data.columns:
+                print(f"Skipping step '{step_name}' as column '{kwargs['column']}' is not found.")
+                continue
+            processed_data = func(**kwargs)
+            print(f"After step '{step_name}':\n", processed_data.head())  # Debug output
+        return processed_data
+
+
+    def save_pipeline(self, file_path):
+        """Save the pipeline steps to a file."""
+        with open(file_path, 'wb') as file:
+            pickle.dump(self.steps, file)
+
+    def load_pipeline(self, file_path):
+        """Load the pipeline steps from a file."""
+        with open(file_path, 'rb') as file:
+            self.steps = pickle.load(file)
